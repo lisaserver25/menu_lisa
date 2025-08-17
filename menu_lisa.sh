@@ -93,39 +93,12 @@ show_update_menu() {
     done
 }
 
-# --- FUNCIÓN #4: AUTO-ACTUALIZACIÓN DEL PANEL ---
-self_update() {
-    local REPO_URL="https://github.com/lisaserver25/menu_lisa.git"; local SCRIPT_NAME="menu_lisa.sh"; local TEMP_DIR=$(mktemp -d)
-    echo -e "${CYAN}› Buscando actualizaciones para este panel...${FIN}"
-    if git clone --quiet --depth 1 "$REPO_URL" "$TEMP_DIR"; then
-        local new_script_path="$TEMP_DIR/$SCRIPT_NAME"; if [ -f "$new_script_path" ]; then
-            local current_script_path; current_script_path=$(realpath "$0")
-            mv "$new_script_path" "$current_script_path"; chmod +x "$current_script_path"; rm -rf "$TEMP_DIR"
-            echo -e "${VERDE}› ¡Actualización completada! El panel se reiniciará ahora...${FIN}"; sleep 2
-            exec "$current_script_path" "$@"
-        else rm -rf "$TEMP_DIR"; echo -e "${ROJO}› No se encontró el script '${SCRIPT_NAME}' en el repositorio.${FIN}"; sleep 2; fi
-    else rm -rf "$TEMP_DIR"; echo -e "${ROJO}› No se pudo descargar la actualización.${FIN}"; sleep 2; fi
-}
-
-# --- FUNCIÓN #5: DESINSTALACIÓN TOTAL ---
-uninstall_all() {
-    echo -e "${ROJO}AVISO: Esta acción es IRREVERSIBLE.${FIN}"; echo -e "\n${AMARILLO}Se eliminarán los siguientes scripts gestionados de /root/:${FIN}"; local found_any=false
-    for script_name in "${MANAGED_SCRIPTS[@]}"; do
-        if [ -f "/root/$script_name" ]; then echo -e "  ${GRIS}- $script_name${FIN}"; found_any=true; fi
-    done
-    if [ "$found_any" = false ]; then echo -e "  ${GRIS}- (No se encontraron scripts para borrar)${FIN}"; fi
-    echo -e "\n${AMARILLO}Además, se borrará este panel (${0##*/}) y se limpiará el historial.${FIN}"; read -p "Para confirmar, escribe 'SI' en mayúsculas: " confirmation
-    if [ "$confirmation" == "SI" ]; then
-        echo -e "\n${CYAN}› Procediendo con la limpieza total...${FIN}"; echo -e "  - Eliminando scripts descargados..."; for script_name in "${MANAGED_SCRIPTS[@]}"; do rm -f "/root/$script_name"; rm -f "/root/.$script_name.commit"; done; sleep 1
-        echo -e "  - Limpiando historial de comandos..."; history -c && history -w; sleep 1; echo -e "  - Eliminando este panel..."; rm -- "$0"
-        echo -e "\n${VERDE}› Limpieza completada. Saliendo.${FIN}"; exit 0
-    else echo -e "\n${VERDE}› Acción cancelada.${FIN}"; sleep 2; fi
-}
-
 # --- OTRAS FUNCIONES ---
-convert_logo_to_ascii() { read -p "$(echo -e "${CYAN}› Introduce la URL de la imagen (SVG, PNG, JPG): ${FIN}")" LOGO_URL; if [ -z "$LOGO_URL" ]; then echo -e "${ROJO}Error: URL vacía.${FIN}"; sleep 1; return; fi; echo -e "\n${CYAN}› Convirtiendo...${FIN}\n"; local c=""; case "$LOGO_URL" in *.svg|*.SVG) if ! command -v rsvg-convert &>/dev/null; then echo -e "${ROJO}Error: 'rsvg-convert' no instalado.${FIN}"; sleep 2; return; fi; curl -sL "$LOGO_URL"|rsvg-convert|jp2a --color --width=80 -; c="curl -sL \"$LOGO_URL\"|rsvg-convert|jp2a --color --width=80 -";; *.png|*.PNG|*.jpg|*.JPG|*.jpeg|*.JPEG) if ! command -v convert &>/dev/null; then echo -e "${ROJO}Error: 'imagemagick' no instalado.${FIN}"; sleep 2; return; fi; curl -sL "$LOGO_URL"|convert - jpg:-|jp2a --color --width=80 -; c="curl -sL \"$LOGO_URL\"|convert - jpg:-|jp2a --color --width=80 -";; *) echo -e "${ROJO}Error: Formato no soportado.${FIN}"; sleep 2; return;; esac; echo; read -p "$(echo -e "${CYAN}› ¿Guardar comando? (s/N): ${FIN}")" s; if [[ "$s" =~ ^[sS]$ ]]; then local p="/root/logo_ascii_command.sh"; echo "#!/bin/bash" > "$p"; echo "$c" >> "$p"; chmod +x "$p"; echo -e "${VERDE}› Guardado en ${p}!${FIN}"; fi; read -p $'\nPresiona ENTER...'; }
-show_pending_message() { echo; echo; echo -e "\n${AMARILLO}=============================================${FIN}"; echo -e "         ${BLANCO_BRILLANTE}Opción en Desarrollo${FIN}"; echo -e "${AMARILLO}=============================================${FIN}"; echo -e "\n${CYAN}› Este script está pendiente de ser añadido.${FIN}\n"; read -p "Presiona ENTER..."; }
-show_legal_notice() { echo; echo; echo -e "${AMARILLO}=======================================================================${FIN}"; echo -e "${BLANCO_BRILLANTE}                          AVISO LEGAL Y DE USO${FIN}"; echo -e "${AMARILLO}=======================================================================${FIN}"; echo; echo -e "... (texto legal) ..."; read -p $'\nPresiona ENTER...'; }
+self_update() { echo "Función de auto-actualización pendiente."; sleep 2; }
+uninstall_all() { echo "Función de desinstalación pendiente."; sleep 2; }
+convert_logo_to_ascii() { echo "Función de logo pendiente."; sleep 2; }
+show_pending_message() { echo "Función pendiente."; sleep 2; }
+show_legal_notice() { echo "Función de aviso legal pendiente."; sleep 2; }
 
 # --- FUNCIÓN DEL MENÚ PRINCIPAL ---
 show_menu() {
